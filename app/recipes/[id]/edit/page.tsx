@@ -181,35 +181,115 @@ export default function EditRecipePage() {
             />
           </div>
 
-          {/* Tags */}
-          <div style={{ marginBottom: '24px' }}>
-            <label style={labelStyle}>Tags</label>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-              {ALL_TAGS.map(tag => (
-                <button
-                  key={tag}
-                  type="button"
-                  onClick={() => toggleTag(tag)}
-                  style={{
-                    padding: '5px 12px',
-                    borderRadius: '999px',
-                    border: '1.5px solid',
-                    borderColor: tags.includes(tag) ? 'var(--accent)' : 'var(--border)',
-                    background: tags.includes(tag) ? 'var(--accent-light)' : 'var(--surface)',
-                    color: tags.includes(tag) ? 'var(--accent)' : 'var(--text-muted)',
-                    fontSize: '0.8rem',
-                    fontWeight: 500,
-                    cursor: 'pointer',
-                    textTransform: 'capitalize',
-                    transition: 'all 0.15s',
-                  }}
-                >
-                  {tag}
-                </button>
-              ))}
-            </div>
-          </div>
+{/* Tags */}
+<div style={{ marginBottom: '24px' }}>
+  <label style={labelStyle}>Tags</label>
+  
+  {/* Predefined tags */}
+  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '12px' }}>
+    {ALL_TAGS.map(tag => (
+      <button
+        key={tag}
+        type="button"
+        onClick={() => toggleTag(tag)}
+        style={{
+          padding: '5px 12px',
+          borderRadius: '999px',
+          border: '1.5px solid',
+          borderColor: tags.includes(tag) ? 'var(--accent)' : 'var(--border)',
+          background: tags.includes(tag) ? 'var(--accent-light)' : 'var(--surface)',
+          color: tags.includes(tag) ? 'var(--accent)' : 'var(--text-muted)',
+          fontSize: '0.8rem',
+          fontWeight: 500,
+          cursor: 'pointer',
+          textTransform: 'capitalize',
+          transition: 'all 0.15s',
+        }}
+      >
+        {tag}
+      </button>
+    ))}
+  </div>
 
+  {/* Custom tags */}
+  {tags.filter(t => !ALL_TAGS.includes(t)).length > 0 && (
+    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '12px' }}>
+      {tags.filter(t => !ALL_TAGS.includes(t)).map(tag => (
+        <span key={tag} style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: '4px',
+          padding: '5px 10px',
+          borderRadius: '999px',
+          background: 'var(--accent-light)',
+          border: '1.5px solid var(--accent)',
+          color: 'var(--accent)',
+          fontSize: '0.8rem',
+          fontWeight: 500,
+        }}>
+          {tag}
+          <button
+            type="button"
+            onClick={() => setTags(prev => prev.filter(t => t !== tag))}
+            style={{
+              border: 'none',
+              background: 'none',
+              color: 'var(--accent)',
+              cursor: 'pointer',
+              fontSize: '0.9rem',
+              padding: '0',
+              lineHeight: 1,
+            }}
+          >×</button>
+        </span>
+      ))}
+    </div>
+  )}
+
+  {/* Add custom tag input */}
+  <div style={{ display: 'flex', gap: '8px' }}>
+    <input
+      type="text"
+      placeholder="Add custom tag..."
+      style={{ ...inputStyle, flex: 1 }}
+      onFocus={e => (e.target.style.borderColor = 'var(--accent)')}
+      onBlur={e => (e.target.style.borderColor = 'var(--border)')}
+      onKeyDown={e => {
+        if (e.key === 'Enter') {
+          e.preventDefault()
+          const val = e.currentTarget.value.trim().toLowerCase()
+          if (val && !tags.includes(val)) {
+            setTags(prev => [...prev, val])
+          }
+          e.currentTarget.value = ''
+        }
+      }}
+    />
+    <button
+      type="button"
+      style={{
+        padding: '9px 16px',
+        background: 'var(--accent)',
+        color: 'white',
+        border: 'none',
+        borderRadius: 'var(--radius)',
+        fontSize: '0.875rem',
+        fontWeight: 500,
+        cursor: 'pointer',
+      }}
+      onClick={e => {
+        const input = e.currentTarget.previousElementSibling as HTMLInputElement
+        const val = input.value.trim().toLowerCase()
+        if (val && !tags.includes(val)) {
+          setTags(prev => [...prev, val])
+        }
+        input.value = ''
+      }}
+    >
+      Add
+    </button>
+  </div>
+</div>
           {/* Ingredients */}
           <div style={{ marginBottom: '24px' }}>
             <label style={labelStyle}>Ingredients</label>
