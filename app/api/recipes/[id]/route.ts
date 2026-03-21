@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 
-export async function GET(_: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+type Params = { params: Promise<{ id: string }> }
+
+export async function GET(_: NextRequest, { params }: Params) {
   const { id } = await params
   const recipe = await prisma.recipe.findUnique({
     where: { id: parseInt(id) },
@@ -10,7 +12,7 @@ export async function GET(_: NextRequest, { params }: { params: Promise<{ id: st
   return NextResponse.json(recipe)
 }
 
-export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+export async function PUT(req: NextRequest, { params }: Params) {
   const { id } = await params
   const body = await req.json()
   const recipe = await prisma.recipe.update({
@@ -20,7 +22,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
   return NextResponse.json(recipe)
 }
 
-export async function DELETE(_: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+export async function DELETE(_: NextRequest, { params }: Params) {
   const { id } = await params
   await prisma.recipe.delete({ where: { id: parseInt(id) } })
   return NextResponse.json({ success: true })
