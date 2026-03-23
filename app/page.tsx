@@ -100,7 +100,7 @@ export default function HomePage() {
       <section style={{ padding: '48px 0' }}>
         <div className="container">
           <h2 style={{
-            fontSize: '1.1rem',
+            
             fontWeight: 500,
             marginBottom: '20px',
             color: 'var(--text-muted)',
