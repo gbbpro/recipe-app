@@ -6,7 +6,11 @@ export async function GET(req: NextRequest) {
   const search = searchParams.get('search') || ''
   const tag = searchParams.get('tag') || ''
   const favoritesOnly = searchParams.get('favorites') === 'true'
-
+  
+  if (searchParams.get('count') === 'true') {
+  const count = await prisma.recipe.count()
+  return NextResponse.json({ count })
+}
   const recipes = await prisma.recipe.findMany({
     where: {
       AND: [

@@ -29,11 +29,17 @@ export default function HomePage() {
   const [favorites, setFavorites] = useState<Recipe[]>([])
   const [search, setSearch] = useState('')
   const [loading, setLoading] = useState(true)
-
+  const [recipeCount, setRecipeCount] = useState<number | null>(null)
+  
   useEffect(() => {
     fetch('/api/recipes?favorites=true')
       .then(r => r.json())
       .then(data => { setFavorites(data); setLoading(false) })
+
+    fetch('/api/recipes?count=true')
+    .then(r => r.json())
+    .then(data => setRecipeCount(data.count))
+
   }, [])
 
   const handleSearch = (e: React.FormEvent) => {
@@ -60,7 +66,7 @@ export default function HomePage() {
             What are you cooking?
           </h1>
           <p style={{ color: 'var(--text-muted)', marginBottom: '28px', fontSize: '1.05rem' }}>
-            Browse 1,299 recipes by category or search by name.
+            Browse {recipeCount ?? '...'} recipes by category or search by name.
           </p>
           <form onSubmit={handleSearch} style={{ display: 'flex', gap: '8px' }}>
             <input
