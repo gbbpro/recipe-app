@@ -139,13 +139,13 @@ input, textarea {
     gap: 6px !important;
   }
 
- .sidebar-label {
-  display: none !important;
-}
+  .sidebar-label {
+    display: none !important;
+  }
 
-.browse-sidebar > div {
-  margin-bottom: 0 !important;
-}
+  .browse-sidebar > div {
+    margin-bottom: 0 !important;
+  }
   .browse-sidebar button {
     width: auto !important;
     padding: 5px 12px !important;
