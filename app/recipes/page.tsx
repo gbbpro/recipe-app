@@ -14,6 +14,7 @@ type Recipe = {
 }
 
 function RecipeBrowser() {
+  console.log('window width:', typeof window !== 'undefined' ? window.innerWidth : 'SSR')
   const searchParams = useSearchParams()
   const router = useRouter()
 
