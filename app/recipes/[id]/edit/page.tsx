@@ -16,6 +16,7 @@ type Recipe = {
   isFavorite: boolean
   ingredientSections: IngredientSection[]
   instructions: string[]
+  notes: string | null
 }
 
 export default function EditRecipePage() {
