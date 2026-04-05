@@ -5,7 +5,7 @@ export const metadata: Metadata = {
   title: '810 Recipe App',
   description: 'A personal recipe collection',
   icons: {
-    icon: 'favicon.png'
+    icon: '~/Dev/recipe-app/public/favicon.png'
   }
 }
 
@@ -35,7 +35,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             }}>
               Recipes
             </a>
-            <div style={{ display: 'flex', gap: '24px', alignItems: 'center' }}>
+            <div className="nav-links" style={{display: 'flex', gap: '24px', alignItems: 'center' }}>
               <a href="/recipes" style={{
                 fontSize: '0.875rem',
                 color: 'var(--text-muted)',

@@ -138,7 +138,8 @@ export default function RecipePage() {
         </div>
 
         {/* Two column layout */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '48px', alignItems: 'flex-start' }}>
+        
+        <div className="recipe-body" style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '48px', alignItems: 'flex-start' }}>
 
           {/* Ingredients */}
           <div>

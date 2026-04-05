@@ -57,11 +57,11 @@ function RecipeBrowser() {
         padding: '32px 0',
       }}>
         <div className="container">
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '16px' }}>
+          <div className="browse-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '16px' }}>
             <h1 style={{ fontSize: '1.75rem', fontWeight: 600, letterSpacing: '-0.02em' }}>
               {favoritesOnly ? '⭐ Favorites' : activeTag ? `${activeTag.charAt(0).toUpperCase() + activeTag.slice(1)} Recipes` : 'All Recipes'}
             </h1>
-            <form onSubmit={handleSearch} style={{ display: 'flex', gap: '8px' }}>
+            <form className="browse-search" onSubmit={handleSearch} style={{ display: 'flex', gap: '8px' }}>
               <input
                 type="text"
                 value={search}
@@ -95,11 +95,11 @@ function RecipeBrowser() {
         </div>
       </section>
 
-      <div className="container" style={{ padding: '32px 24px', display: 'flex', gap: '32px', alignItems: 'flex-start' }}>
+      <div className="container browse-layout" style={{ padding: '32px 24px', display: 'flex', gap: '32px', alignItems: 'flex-start' }}>
         {/* Sidebar filters */}
-        <aside style={{ width: '180px', flexShrink: 0 }} className="no-print">
+        <aside className="browse-sidebar no-print" style={{ width: '180px', flexShrink: 0 }}>
           <div style={{ marginBottom: '24px' }}>
-            <div style={{
+            <div className="sidebar-label" style={{
               fontSize: '0.75rem',
               fontWeight: 500,
               color: 'var(--text-muted)',
@@ -132,7 +132,7 @@ function RecipeBrowser() {
           </div>
 
           <div>
-            <div style={{
+            <div className="sidebar-label" style={{
               fontSize: '0.75rem',
               fontWeight: 500,
               color: 'var(--text-muted)',
@@ -171,7 +171,7 @@ function RecipeBrowser() {
         </aside>
 
         {/* Recipe grid */}
-        <div style={{ flex: 1 }}>
+        <div className="recipe-grid" style={{ flex: 1 }}>
           {loading ? (
             <div style={{ color: 'var(--text-muted)', padding: '32px 0' }}>Loading...</div>
           ) : recipes.length === 0 ? (
