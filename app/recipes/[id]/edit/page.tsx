@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
+import { ALL_TAGS } from '@/lib/tags'
 
 type IngredientSection = {
   label: string
@@ -16,12 +17,6 @@ type Recipe = {
   ingredientSections: IngredientSection[]
   instructions: string[]
 }
-
-const ALL_TAGS = [
-  'cake', 'cookies', 'bread', 'pastry', 'chocolate', 'lemon',
-  'chicken', 'beef', 'seafood', 'pasta', 'soup', 'salad',
-  'dessert', 'breakfast', 'indian', 'italian', 'french', 'vegetarian'
-]
 
 export default function EditRecipePage() {
   const params = useParams()

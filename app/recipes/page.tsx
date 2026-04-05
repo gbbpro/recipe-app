@@ -3,12 +3,8 @@
 import { useEffect, useState } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { Suspense } from 'react'
+import { ALL_TAGS } from '@/lib/tags'
 
-const ALL_TAGS = [
-  'cake', 'cookies', 'bread', 'pastry', 'chocolate', 'lemon',
-  'chicken', 'beef', 'seafood', 'pasta', 'soup', 'salad',
-  'dessert', 'breakfast', 'indian', 'italian', 'french', 'vegetarian'
-]
 
 type Recipe = {
   id: number

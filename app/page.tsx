@@ -2,20 +2,8 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { ALL_TAGS, TAG_ICONS } from "@/lib/tags"
 
-const ALL_TAGS = [
-  'cake', 'cookies', 'bread', 'pastry', 'chocolate', 'lemon',
-  'chicken', 'beef', 'seafood', 'pasta', 'soup', 'salad',
-  'dessert', 'breakfast', 'indian', 'italian', 'french', 'vegetarian'
-]
-
-const TAG_ICONS: Record<string, string> = {
-  cake: '🎂', cookies: '🍪', bread: '🍞', pastry: '🥐',
-  chocolate: '🍫', lemon: '🍋', chicken: '🍗', beef: '🥩',
-  seafood: '🐟', pasta: '🍝', soup: '🍲', salad: '🥗',
-  dessert: '🍮', breakfast: '🍳', indian: '🍛', italian: '🇮🇹',
-  french: '🥖', vegetarian: '🥦'
-}
 
 type Recipe = {
   id: number
