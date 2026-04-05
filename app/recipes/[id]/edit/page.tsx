@@ -28,6 +28,7 @@ export default function EditRecipePage() {
   const [isFavorite, setIsFavorite] = useState(false)
   const [tags, setTags] = useState<string[]>([])
   const [sections, setSections] = useState<IngredientSection[]>([{ label: '', items: [''] }])
+  const [notes, setNotes] = useState('')
 
   useEffect(() => {
     fetch(`/api/recipes/${params.id}`)
@@ -43,6 +44,7 @@ export default function EditRecipePage() {
         )
         setInstructions(recipe.instructions.join('\n'))
         setLoading(false)
+        setNotes(recipe.notes || '')
       })
   }, [params.id])
 
@@ -103,6 +105,7 @@ export default function EditRecipePage() {
         instructions: instructionList,
         tags,
         isFavorite,
+        notes: notes || null,
       }),
     })
 
@@ -376,7 +379,21 @@ export default function EditRecipePage() {
               onBlur={e => (e.target.style.borderColor = 'var(--border)')}
             />
           </div>
-
+          <div style={{ marginBottom: '24px' }}>
+  <label style={labelStyle}>Notes</label>
+  <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '8px' }}>
+    Personal tweaks, tips, or reminders
+  </p>
+  <textarea
+    value={notes}
+    onChange={e => setNotes(e.target.value)}
+    rows={4}
+    placeholder="e.g. Add extra vanilla, bake 5 min less in my oven..."
+    style={{ ...inputStyle, resize: 'vertical', lineHeight: 1.6 }}
+    onFocus={e => (e.target.style.borderColor = 'var(--accent)')}
+    onBlur={e => (e.target.style.borderColor = 'var(--border)')}
+  />
+</div>
           {/* Favorite */}
           <div style={{ marginBottom: '32px', display: 'flex', alignItems: 'center', gap: '10px' }}>
             <input

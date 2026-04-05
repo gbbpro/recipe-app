@@ -15,6 +15,7 @@ model Recipe {
   instructions       String[]
   tags               String[]
   isFavorite         Boolean   @default(false)
+  notes              String?   // ← add this line
   createdAt          DateTime  @default(now())
   updatedAt          DateTime  @updatedAt
 }

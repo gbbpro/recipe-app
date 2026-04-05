@@ -7,6 +7,7 @@ type IngredientSection = { label: string | null; items: string[] }
 type Recipe = {
   id: number
   name: string
+  notes: string | null
   tags: string[]
   isFavorite: boolean
   ingredientSections: IngredientSection[]
@@ -57,7 +58,25 @@ export default function RecipePage() {
         {/* Header */}
         <div style={{ marginBottom: '40px', paddingBottom: '32px', borderBottom: '1px solid var(--border)' }}>
           <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '16px', flexWrap: 'wrap' }}>
-
+            
+{/* Notes */}
+{recipe.notes && (
+  <div style={{
+    background: 'var(--accent-light)',
+    border: '1px solid var(--border)',
+    borderLeft: '3px solid var(--accent)',
+    borderRadius: 'var(--radius)',
+    padding: '16px 20px',
+    marginBottom: '32px',
+  }}>
+    <div style={{ fontSize: '0.75rem', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--accent)', marginBottom: '6px' }}>
+      📝 Notes
+    </div>
+    <p style={{ fontSize: '0.9rem', lineHeight: 1.6, color: 'var(--text)' }}>
+      {recipe.notes}
+    </p>
+  </div>
+)}
             {/* Title + tags */}
             <div style={{ flex: 1 }}>
               <h1 style={{ fontSize: 'clamp(1.5rem, 4vw, 2.25rem)', fontWeight: 600, letterSpacing: '-0.02em', marginBottom: '16px', lineHeight: 1.2 }}>
@@ -160,7 +179,6 @@ export default function RecipePage() {
               ))}
             </ol>
           </div>
-
         </div>
       </div>
     </main>
