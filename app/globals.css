@@ -115,7 +115,8 @@ input, textarea {
     font-size: 7pt !important;
     padding: 1pt 4pt !important;
   }
-}/* ─── Mobile styles ────────────────────────────────────────── */
+}
+/* ─── Mobile styles ────────────────────────────────────────── */
 @media (max-width: 768px) {
   .container {
     padding: 0 16px !important;
