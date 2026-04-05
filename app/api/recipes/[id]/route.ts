@@ -17,7 +17,14 @@ export async function PUT(req: NextRequest, { params }: Params) {
   const body = await req.json()
   const recipe = await prisma.recipe.update({
     where: { id: parseInt(id) },
-    data: body,
+    data: {
+      ...(body.name !== undefined && { name: body.name }),
+      ...(body.ingredientSections !== undefined && { ingredientSections: body.ingredientSections }),
+      ...(body.instructions !== undefined && { instructions: body.instructions }),
+      ...(body.tags !== undefined && { tags: body.tags }),
+      ...(body.isFavorite !== undefined && { isFavorite: body.isFavorite }),
+      ...(body.notes !== undefined && { notes: body.notes }),
+    },
   })
   return NextResponse.json(recipe)
 }
