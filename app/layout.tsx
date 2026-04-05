@@ -55,6 +55,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               }}>
                 + Add Recipe
               </a>
+              <a href="/planner" style={{
+                fontSize: '0.875rem',
+                color: 'var(--text-muted)',
+                fontWeight: 500,
+              }}>
+                Planner
+              </a>
             </div>
           </div>
         </nav>
