@@ -149,10 +149,12 @@ input, textarea {
   }
   .browse-sidebar button {
     width: auto !important;
+    display: inline-flex !important;
     padding: 5px 12px !important;
     border-radius: 999px !important;
     border: 1px solid var(--border) !important;
     font-size: 0.8rem !important;
+    text-align: left !important;
   }
 
   .browse-search input {
