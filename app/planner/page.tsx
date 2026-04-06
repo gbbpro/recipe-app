@@ -105,31 +105,36 @@ export default function PlannerPage() {
   const goToThisWeek = () => setWeekStart(getMonday(new Date()))
 
   const generateShoppingList = async () => {
-    setLoadingShoppingList(true)
-    setShowShoppingList(true)
-    const recipeIds = [...new Set(meals.map(m => m.recipeId))]
-    const recipes = await Promise.all(
-      recipeIds.map(id => fetch(`/api/recipes/${id}`).then(r => r.json()))
-    )
+  setLoadingShoppingList(true)
+  setShowShoppingList(true)
+  const recipeIds = [...new Set(meals.map(m => m.recipeId))]
+  const recipes = await Promise.all(
+    recipeIds.map(id => fetch(`/api/recipes/${id}`).then(r => r.json()))
+  )
 
-    // Collect all ingredients into a flat list
-    const allIngredients: string[] = recipes.flatMap(r =>
-      (r.ingredientSections as { label: string | null; items: string[] }[])
-        .flatMap(s => s.items)
-    )
+  // Collect all ingredients
+  const allIngredients: string[] = recipes.flatMap(r =>
+    (r.ingredientSections as { label: string | null; items: string[] }[])
+      .flatMap(s => s.items)
+  )
 
-    // Merge duplicates by normalizing and grouping
-    const merged: Record<string, string> = {}
-    for (const item of allIngredients) {
-      const key = item.toLowerCase().replace(/[\d\s\/½¼¾⅓⅔⅛⅜⅝⅞]+/g, '').trim()
-      if (!merged[key]) {
-        merged[key] = item
-      }
-    }
+  // Strip quantities and measurements, keep just the ingredient name
+  const stripped = allIngredients.map(item =>
+    item
+      .replace(/^[\d\s\-\/½¼¾⅓⅔⅛⅜⅝⅞\.]+/, '') // strip leading numbers/fractions
+      .replace(/^\s*(cups?|tbsp?|tablespoons?|teaspoons?|tsp?|oz|ounces?|lbs?|pounds?|g|kg|ml|l|pinch|handful|dash|cloves?|slices?|cans?|packages?|pkg|bunch|head|large|medium|small|inch|cm)\s+/i, '') // strip units
+      .replace(/^\s*of\s+/i, '') // strip "of"
+      .trim()
+  )
 
-    setShoppingList([{ recipeId: 0, name: '', ingredients: Object.values(merged) }])
-    setLoadingShoppingList(false)
-  }
+  // Deduplicate and sort alphabetically
+  const unique = [...new Set(stripped.map(i => i.toLowerCase()))]
+    .sort()
+    .map(i => i.charAt(0).toUpperCase() + i.slice(1)) // capitalize first letter
+
+  setShoppingList([{ recipeId: 0, name: '', ingredients: unique }])
+  setLoadingShoppingList(false)
+}
   const inputStyle = {
     width: '100%', padding: '9px 12px',
     border: '1.5px solid var(--border)', borderRadius: 'var(--radius)',
