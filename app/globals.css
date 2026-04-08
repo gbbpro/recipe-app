@@ -15,6 +15,29 @@
   --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
 }
 
+[data-theme="dark"] {
+  --bg: #1a1814;
+  --surface: #242018;
+  --border: #3a3530;
+  --text: #f0ece6;
+  --text-muted: #8a8278;
+  --accent: #e07340;
+  --accent-light: #2a1f18;
+  --tag-bg: #2a2520;
+  --tag-text: #a09890;
+}
+
+[data-theme="dark"] input,
+[data-theme="dark"] textarea {
+  color: var(--text) !important;
+  background: var(--surface) !important;
+  color-scheme: dark;
+}
+
+[data-theme="dark"] input::placeholder,
+[data-theme="dark"] textarea::placeholder {
+  color: var(--text-muted) !important;
+}
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
 html { font-size: 16px; }

@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import './globals.css'
+import DarkModeToggle from "@/components/DarkModeToggle"
 
 export const metadata: Metadata = {
   title: '810 Recipe App',
@@ -11,7 +12,13 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
+      <head>
+            <script dangerouslySetInnerHTML={{ __html: `
+              const theme = localStorage.getItem('theme')
+              if (theme) document.documentElement.setAttribute('data-theme', theme)
+            `}} />
+      </head>
       <body>
         <nav style={{
           borderBottom: '1px solid var(--border)',
@@ -62,6 +69,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               }}>
                 Planner
               </a>
+            <DarkModeToggle />
+
             </div>
           </div>
         </nav>

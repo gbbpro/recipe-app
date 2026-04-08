@@ -25,22 +25,20 @@ export default function BatchTagEditor() {
   useEffect(() => {
     setLoading(true)
     setSelected(new Set())
-    setSearch('')
-    fetch(`/api/recipes?tag=${activeTag}`)
+    const url = search
+      ? `/api/recipes?search=${encodeURIComponent(search)}`
+      : `/api/recipes?tag=${activeTag}`
+    fetch(url)
       .then(r => r.json())
       .then(data => {
         setRecipes(data)
         setFiltered(data)
         setLoading(false)
       })
-  }, [activeTag])
+  }, [activeTag, search])
 
-  // Filter by search
-  useEffect(() => {
-    const q = search.toLowerCase()
-    setFiltered(recipes.filter(r => r.name.toLowerCase().includes(q)))
-    setSelected(new Set())
-  }, [search, recipes])
+
+
 
   const toggleSelect = (id: number) => {
     setSelected(prev => {
@@ -167,7 +165,7 @@ export default function BatchTagEditor() {
                 type="text"
                 value={search}
                 onChange={e => setSearch(e.target.value)}
-                placeholder="Filter by name..."
+                placeholder="Filter by recipe.."
                 style={{
                   padding: '7px 12px',
                   border: '1.5px solid var(--border)',
@@ -180,6 +178,11 @@ export default function BatchTagEditor() {
                 onFocus={e => (e.target.style.borderColor = 'var(--accent)')}
                 onBlur={e => (e.target.style.borderColor = 'var(--border)')}
               />
+              {search && (
+                <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                  Searching all recipes
+                </span>
+              )}
 
               <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
                 <button onClick={selectAll} style={{
