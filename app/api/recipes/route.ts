@@ -21,12 +21,14 @@ export async function GET(req: NextRequest) {
     const count = await prisma.recipe.count();
     return NextResponse.json({ count });
   }
+  const noTags = searchParams.get('notags') === 'true'
   const recipes = await prisma.recipe.findMany({
     where: {
       AND: [
         search ? { name: { contains: search, mode: "insensitive" } } : {},
         tag ? { tags: { has: tag } } : {},
         favoritesOnly ? { isFavorite: true } : {},
+        noTags ? { tags: { isEmpty: true } } : {},
       ],
     },
     orderBy: { name: "asc" },

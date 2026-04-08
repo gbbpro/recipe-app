@@ -25,9 +25,14 @@ export default function BatchTagEditor() {
   useEffect(() => {
     setLoading(true)
     setSelected(new Set())
-    const url = search
-      ? `/api/recipes?search=${encodeURIComponent(search)}`
-      : `/api/recipes?tag=${activeTag}`
+    let url = '/api/recipes'
+    if (search) {
+      url = `/api/recipes?search=${encodeURIComponent(search)}`
+    } else if (activeTag === 'none') {
+      url = '/api/recipes?notags=true'
+    } else if (activeTag) {
+      url = `/api/recipes?tag=${activeTag}`
+    }
     fetch(url)
       .then(r => r.json())
       .then(data => {
@@ -144,6 +149,36 @@ export default function BatchTagEditor() {
                 {tag}
               </button>
             ))}
+              <button
+              onClick={() => { setActiveTag(''); setSearch('') }}
+              style={{
+                display: 'block', width: '100%', textAlign: 'left',
+                padding: '7px 10px', borderRadius: 'var(--radius)',
+                border: '1px solid',
+                borderColor: activeTag === '' && !search ? 'var(--accent)' : 'transparent',
+                background: activeTag === '' && !search ? 'var(--accent-light)' : 'transparent',
+                color: activeTag === '' && !search ? 'var(--accent)' : 'var(--text)',
+                fontSize: '0.875rem', fontWeight: 500,
+                marginBottom: '8px', cursor: 'pointer',
+              }}
+            >
+              All Recipes
+            </button>
+            <button
+              onClick={() => { setActiveTag('none'); setSearch('') }}
+              style={{
+              display: 'block', width: '100%', textAlign: 'left',
+              padding: '7px 10px', borderRadius: 'var(--radius)',
+              border: '1px solid',
+              borderColor: activeTag === 'none' ? 'var(--accent)' : 'transparent',
+              background: activeTag === 'none' ? 'var(--accent-light)' : 'transparent',
+              color: activeTag === 'none' ? 'var(--accent)' : 'var(--text)',
+              fontSize: '0.875rem', fontWeight: 500,
+              marginBottom: '8px', cursor: 'pointer',
+            }}
+          >
+            No Tags
+          </button>
           </aside>
 
           {/* Main panel */}
@@ -274,7 +309,7 @@ export default function BatchTagEditor() {
                   color: 'var(--text-muted)',
                   fontWeight: 500,
                 }}>
-                  {filtered.length} recipes tagged "{activeTag}"
+                  {filtered.length} recipes {activeTag === 'none' ? 'with no tags' : activeTag ? `tagged "${activeTag}"` : search ? `matching "${search}"` : 'total'}
                 </div>
                 {filtered.map((recipe, i) => (
                   <div
