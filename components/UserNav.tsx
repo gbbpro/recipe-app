@@ -1,4 +1,4 @@
-&'use client'
+'use client'
 
 import { SignInButton, SignUpButton, UserButton, useUser } from '@clerk/nextjs'
 

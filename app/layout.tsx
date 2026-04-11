@@ -1,6 +1,8 @@
+import { ClerkProvider } from "@clerk/nextjs"
 import type { Metadata } from 'next'
 import './globals.css'
 import DarkModeToggle from "@/components/DarkModeToggle"
+import UserNav from "@/components/UserNav"
 
 export const metadata: Metadata = {
   title: '810 Recipe App',
@@ -12,6 +14,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
+    <ClerkProvider>
     <html lang="en" suppressHydrationWarning>
       <head>
             <script dangerouslySetInnerHTML={{ __html: `
@@ -70,6 +73,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 Planner
               </a>
             <DarkModeToggle />
+              <UserNav />
 
             </div>
           </div>
@@ -77,5 +81,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         {children}
       </body>
     </html>
+    </ClerkProvider>
   )
 }

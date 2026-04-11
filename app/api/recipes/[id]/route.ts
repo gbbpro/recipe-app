@@ -1,9 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { auth } from '@clerk/nextjs/server'
 
-type Params = { params: Promise<{ id: string }> }
-
-export async function GET(_: NextRequest, { params }: Params) {
+export async function GET(_: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
   const recipe = await prisma.recipe.findUnique({
     where: { id: parseInt(id) },
@@ -12,10 +11,22 @@ export async function GET(_: NextRequest, { params }: Params) {
   return NextResponse.json(recipe)
 }
 
-export async function PUT(req: NextRequest, { params }: Params) {
+export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const { userId } = await auth()
+  if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+
   const { id } = await params
   const body = await req.json()
-  const recipe = await prisma.recipe.update({
+
+  const recipe = await prisma.recipe.findUnique({ where: { id: parseInt(id) } })
+  if (!recipe) return NextResponse.json({ error: 'Not found' }, { status: 404 })
+
+  // Only allow editing own recipes, not global ones
+  if (recipe.isGlobal && recipe.userId !== userId) {
+    return NextResponse.json({ error: 'Cannot edit global recipes' }, { status: 403 })
+  }
+
+  const updated = await prisma.recipe.update({
     where: { id: parseInt(id) },
     data: {
       ...(body.name !== undefined && { name: body.name }),
@@ -26,11 +37,21 @@ export async function PUT(req: NextRequest, { params }: Params) {
       ...(body.notes !== undefined && { notes: body.notes }),
     },
   })
-  return NextResponse.json(recipe)
+  return NextResponse.json(updated)
 }
 
-export async function DELETE(_: NextRequest, { params }: Params) {
+export async function DELETE(_: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const { userId } = await auth()
+  if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+
   const { id } = await params
+  const recipe = await prisma.recipe.findUnique({ where: { id: parseInt(id) } })
+  if (!recipe) return NextResponse.json({ error: 'Not found' }, { status: 404 })
+
+  if (recipe.userId !== userId) {
+    return NextResponse.json({ error: 'Cannot delete this recipe' }, { status: 403 })
+  }
+
   await prisma.recipe.delete({ where: { id: parseInt(id) } })
   return NextResponse.json({ success: true })
 }

@@ -15,19 +15,21 @@ model Recipe {
   instructions       String[]
   tags               String[]
   isFavorite         Boolean   @default(false)
-  notes              String?   // ← add this line
+  notes              String?
+  userId             String?   // null = global recipe, string = user's personal recipe
+  isGlobal           Boolean   @default(false) // true = starter recipe everyone can see
   createdAt          DateTime  @default(now())
   updatedAt          DateTime  @updatedAt
-
 }
 
 model MealPlan {
   id          Int      @id @default(autoincrement())
   weekStart   DateTime
-  dayOfWeek   Int      // 0=Monday, 6=Sunday
-  mealType    String   // "breakfast", "lunch", "dinner"
+  dayOfWeek   Int
+  mealType    String
   recipeId    Int
+  userId      String   // meal plans always belong to a user
   createdAt   DateTime @default(now())
 
-  @@unique([weekStart, dayOfWeek, mealType])
+  @@unique([weekStart, dayOfWeek, mealType, userId])
 }
