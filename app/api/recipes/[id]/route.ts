@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { auth } from '@clerk/nextjs/server'
 
+const adminUserId = process.env.ADMIN_USER_ID
+
 export async function GET(_: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
   const recipe = await prisma.recipe.findUnique({
@@ -21,9 +23,12 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
   const recipe = await prisma.recipe.findUnique({ where: { id: parseInt(id) } })
   if (!recipe) return NextResponse.json({ error: 'Not found' }, { status: 404 })
 
-  // Only allow editing own recipes, not global ones
-  if (recipe.isGlobal && recipe.userId !== userId) {
+  if (recipe.isGlobal && userId !== adminUserId) {
     return NextResponse.json({ error: 'Cannot edit global recipes' }, { status: 403 })
+  }
+
+  if (!recipe.isGlobal && recipe.userId !== userId) {
+    return NextResponse.json({ error: 'Cannot edit this recipe' }, { status: 403 })
   }
 
   const updated = await prisma.recipe.update({
@@ -45,10 +50,11 @@ export async function DELETE(_: NextRequest, { params }: { params: Promise<{ id:
   if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   const { id } = await params
+
   const recipe = await prisma.recipe.findUnique({ where: { id: parseInt(id) } })
   if (!recipe) return NextResponse.json({ error: 'Not found' }, { status: 404 })
 
-  if (recipe.userId !== userId) {
+  if (recipe.userId !== userId && userId !== adminUserId) {
     return NextResponse.json({ error: 'Cannot delete this recipe' }, { status: 403 })
   }
 

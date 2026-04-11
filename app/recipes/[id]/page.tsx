@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
+import { useUser } from '@clerk/nextjs'
 
 type IngredientSection = { label: string | null; items: string[] }
 type Recipe = {
@@ -18,7 +19,8 @@ export default function RecipePage() {
   const params = useParams()
   const router = useRouter()
   const [recipe, setRecipe] = useState<Recipe | null>(null)
-
+  const { user } = useUser()
+  const isAdmin = user?.id === process.env.NEXT_PUBLIC_ADMIN_USER_ID 
   useEffect(() => {
     fetch(`/api/recipes/${params.id}`)
       .then(r => r.json())
@@ -122,6 +124,7 @@ export default function RecipePage() {
               >
                 🖨 Print
               </button>
+              {isAdmin && (
               <a
                 href={`/recipes/${recipe.id}/edit`}
                 style={{
@@ -131,7 +134,7 @@ export default function RecipePage() {
                 }}
               >
                 ✏️ Edit
-              </a>
+              </a>)}
             </div>
 
           </div>
