@@ -8,7 +8,7 @@ export default function UserNav() {
   if (!isLoaded) return null
 
   if (isSignedIn) {
-    return <UserButton afterSignOutUrl="/" />
+    return <UserButton />
   }
 
   return (
