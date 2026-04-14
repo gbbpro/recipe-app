@@ -4,19 +4,21 @@ import { auth } from '@clerk/nextjs/server'
 
 export async function GET(req: NextRequest) {
   const { userId } = await auth()
+  console.log("UserId in API: ",userId)
   const { searchParams } = new URL(req.url)
   const search = searchParams.get('search') || ''
   const tag = searchParams.get('tag') || ''
-  const favoritesOnly = searchParams.get('favorites') === 'true'
   const noTags = searchParams.get('notags') === 'true'
+  const myRecipesOnly = searchParams.get('myrecipes') === 'true'
+
 
   if (searchParams.get('count') === 'true') {
     const count = await prisma.recipe.count({
       where: {
-        OR: [
-          { isGlobal: true },
-          { userId: userId ?? '' },
-        ]
+        OR: myRecipesOnly 
+         ? [{ userId: userId ?? '' }]
+          : [{ isGlobal: true }, {userId: userId ?? ''}]
+
       }
     })
     return NextResponse.json({ count })
@@ -50,15 +52,14 @@ export async function GET(req: NextRequest) {
     where: {
       AND: [
         {
-          OR: [
-            { isGlobal: true },
-            { userId: userId ?? '' },
-          ]
-        },
-        search ? { name: { contains: search, mode: 'insensitive' } } : {},
-        tag ? { tags: { has: tag } } : {},
-        noTags ? { tags: { isEmpty: true } } : {},
-        favoritesOnly && userId ? { isFavorite: true, userId } : favoritesOnly ? { isFavorite: true } : {},
+        OR: myRecipesOnly
+          ? [{ userId: userId ?? '' }]
+          : [{ isGlobal: true }, { userId: userId ?? '' }],
+      },
+      search ? { name: { contains: search, mode: 'insensitive' } } : {},
+      tag ? { tags: { has: tag } } : {},
+      noTags ? { tags: { isEmpty: true } } : {},
+
       ],
     },
     orderBy: { name: 'asc' },

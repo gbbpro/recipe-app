@@ -7,6 +7,15 @@ datasource db {
   url       = env("DATABASE_URL")
 }
 
+model UserFavorite {
+  id        Int      @id @default(autoincrement())
+  userId    String
+  recipeId  Int
+  createdAt DateTime @default(now())
+
+  @@unique([userId, recipeId])
+}
+
 model Recipe {
   id                 Int       @id @default(autoincrement())
   name               String

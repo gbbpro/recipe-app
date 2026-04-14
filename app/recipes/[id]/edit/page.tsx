@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { ALL_TAGS } from '@/lib/tags'
+import { useUser } from '@clerk/nextjs'
 
 type IngredientSection = {
   label: string
@@ -17,11 +18,14 @@ type Recipe = {
   ingredientSections: IngredientSection[]
   instructions: string[]
   notes: string | null
+  userId: string | null  // ← add this
+  isGlobal: boolean
 }
 
 export default function EditRecipePage() {
   const params = useParams()
   const router = useRouter()
+  const [recipe, setRecipe] = useState<Recipe | null>(null)
   const [saving, setSaving] = useState(false)
   const [loading, setLoading] = useState(true)
   const [name, setName] = useState('')
@@ -30,11 +34,16 @@ export default function EditRecipePage() {
   const [tags, setTags] = useState<string[]>([])
   const [sections, setSections] = useState<IngredientSection[]>([{ label: '', items: [''] }])
   const [notes, setNotes] = useState('')
+  const { user } = useUser()
+  const isAdmin = user?.id === process.env.NEXT_PUBLIC_ADMIN_USER_ID
+  const isOwner = !!recipe && !!user && recipe.userId === user?.id
+  const canEdit = isAdmin || isOwner 
 
   useEffect(() => {
     fetch(`/api/recipes/${params.id}`)
       .then(r => r.json())
       .then((recipe: Recipe) => {
+        setRecipe(recipe)  // ← add this line
         setName(recipe.name)
         setIsFavorite(recipe.isFavorite)
         setTags(recipe.tags)
@@ -149,7 +158,10 @@ export default function EditRecipePage() {
     <div style={{ padding: '64px 24px', color: 'var(--text-muted)' }}>Loading...</div>
   )
 
-  
+  console.log('user id:', user?.id)
+  console.log('recipe userId:', recipe?.userId)
+  console.log('isOwner:', isOwner)
+  console.log('isAdmin:', isAdmin)
   return (
     <main style={{ padding: '48px 0 80px' }}>
       <div className="container" style={{ maxWidth: '680px' }}>
@@ -429,7 +441,7 @@ export default function EditRecipePage() {
               {saving ? 'Saving...' : 'Save Changes'}
             </button>
 
-            <button
+           {(isAdmin || isOwner ) && ( <button
               type="button"
               onClick={handleDelete}
               style={{
@@ -444,7 +456,7 @@ export default function EditRecipePage() {
               }}
             >
               Delete Recipe
-            </button>
+            </button> )}
           </div>
         </form>
       </div>

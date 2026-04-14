@@ -14,7 +14,6 @@ type Recipe = {
 }
 
 function RecipeBrowser() {
-  console.log('window width:', typeof window !== 'undefined' ? window.innerWidth : 'SSR')
   const searchParams = useSearchParams()
   const router = useRouter()
 
@@ -22,33 +21,67 @@ function RecipeBrowser() {
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState(searchParams.get('search') || '')
   const [activeTag, setActiveTag] = useState(searchParams.get('tag') || '')
-  const [favoritesOnly, setFavoritesOnly] = useState(searchParams.get('favorites') === 'true')
+const [favoritesOnly, setFavoritesOnly] = useState(searchParams.get('favorites') === 'true')
+const [myRecipesOnly, setMyRecipesOnly] = useState(false)
+const [favoriteIds, setFavoriteIds] = useState<Set<number>>(new Set())
 
-  useEffect(() => {
-    setLoading(true)
+// load localStorage preference after mount
+useEffect(() => {
+  const saved = localStorage.getItem('myRecipesOnly')
+  if (saved === 'true') setMyRecipesOnly(true)
+}, [])
+
+// fetch user's favorite IDs for star display
+useEffect(() => {
+  fetch('/api/favorites')
+    .then(r => r.json())
+    .then(data => {
+      if (Array.isArray(data)) {
+        setFavoriteIds(new Set(data.map((r: { id: number }) => r.id)))
+      }
+    })
+}, [recipes])
+
+// fetch recipes
+useEffect(() => {
+  setLoading(true)
+
+  if (favoritesOnly) {
+    fetch('/api/favorites')
+      .then(r => r.json())
+      .then(data => {
+        let filtered = Array.isArray(data) ? data : []
+        if (search) filtered = filtered.filter((r: { name: string }) => r.name.toLowerCase().includes(search.toLowerCase()))
+        if (activeTag) filtered = filtered.filter((r: { tags: string[] }) => r.tags?.includes(activeTag))
+        setRecipes(filtered)
+        setLoading(false)
+      })
+  } else {
     const params = new URLSearchParams()
     if (search) params.set('search', search)
     if (activeTag) params.set('tag', activeTag)
-    if (favoritesOnly) params.set('favorites', 'true')
-
+    if (myRecipesOnly) params.set('myrecipes', 'true')
     fetch(`/api/recipes?${params}`)
       .then(r => r.json())
       .then(data => { setRecipes(data); setLoading(false) })
-  }, [search, activeTag, favoritesOnly])
+  }
+}, [search, activeTag, favoritesOnly, myRecipesOnly])
+
 
   const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault()
-    const params = new URLSearchParams()
-    if (search) params.set('search', search)
-    if (activeTag) params.set('tag', activeTag)
-    router.push(`/recipes?${params}`)
-  }
-
+  e.preventDefault()
+  const params = new URLSearchParams()
+  if (search) params.set('search', search)
+  if (activeTag) params.set('tag', activeTag)
+  router.push(`/recipes?${params}`)
+}
   const toggleTag = (tag: string) => {
     setActiveTag(prev => prev === tag ? '' : tag)
     setFavoritesOnly(false)
   }
+  
 
+  
   return (
     <main>
       {/* Header */}
@@ -110,6 +143,25 @@ function RecipeBrowser() {
             }}>
               Filter
             </div>
+              <button
+              onClick={() => {
+                const next = !myRecipesOnly
+                setMyRecipesOnly(next)
+                localStorage.setItem('myRecipesOnly', String(next))
+              }}
+              style={{
+                display: 'block', width: '100%', textAlign: 'left',
+                padding: '7px 10px', borderRadius: 'var(--radius)',
+                border: '1px solid',
+                borderColor: myRecipesOnly ? 'var(--accent)' : 'transparent',
+                background: myRecipesOnly ? 'var(--accent-light)' : 'transparent',
+                color: myRecipesOnly ? 'var(--accent)' : 'var(--text)',
+                fontSize: '0.875rem', fontWeight: 500,
+                marginBottom: '4px', cursor: 'pointer',
+              }}
+>
+              👤 My Recipes
+            </button>
             <button
               onClick={() => { setFavoritesOnly(f => !f); setActiveTag('') }}
               style={{
@@ -212,7 +264,7 @@ function RecipeBrowser() {
                       e.currentTarget.style.borderColor = 'var(--border)'
                     }}
                   >
-                    {recipe.isFavorite && (
+                    {favoriteIds.has(recipe.id) && (
                       <div style={{ fontSize: '0.7rem', color: 'var(--accent)', marginBottom: '4px' }}>⭐</div>
                     )}
                     <div style={{

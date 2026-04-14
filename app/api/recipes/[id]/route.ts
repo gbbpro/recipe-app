@@ -13,7 +13,7 @@ export async function GET(_: NextRequest, { params }: { params: Promise<{ id: st
   return NextResponse.json(recipe)
 }
 
-export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { userId } = await auth()
   if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
@@ -23,6 +23,16 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
   const recipe = await prisma.recipe.findUnique({ where: { id: parseInt(id) } })
   if (!recipe) return NextResponse.json({ error: 'Not found' }, { status: 404 })
 
+  // Allow anyone to toggle their own favorite status
+  if (Object.keys(body).length === 1 && 'isFavorite' in body) {
+    const updated = await prisma.recipe.update({
+      where: { id: parseInt(id) },
+      data: { isFavorite: body.isFavorite },
+    })
+    return NextResponse.json(updated)
+  }
+
+  // All other edits require ownership or admin
   if (recipe.isGlobal && userId !== adminUserId) {
     return NextResponse.json({ error: 'Cannot edit global recipes' }, { status: 403 })
   }

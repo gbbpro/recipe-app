@@ -19,10 +19,14 @@ export default function HomePage() {
   const [recipeCount, setRecipeCount] = useState<number | null>(null);
 
   useEffect(() => {
-    fetch("/api/recipes?favorites=true")
+    fetch("/api/favorites")
       .then((r) => r.json())
       .then((data) => {
-        setFavorites(data);
+        setFavorites(Array.isArray(data) ? data : []);
+        setLoading(false);
+      })
+      .catch(() => {
+        setFavorites([]);
         setLoading(false);
       });
 
@@ -68,69 +72,72 @@ export default function HomePage() {
           >
             Browse {recipeCount ?? "..."} recipes by category or search by name.
           </p>
-          <form onSubmit={handleSearch} style={{ display: "flex", gap: "8px" }}>
-            <input
-              type="text"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search recipes..."
-              style={{
-                flex: 1,
-                padding: "10px 16px",
-                border: "1.5px solid var(--border)",
-                borderRadius: "var(--radius)",
-                fontSize: "0.95rem",
-                background: "var(--bg)",
-                outline: "none",
-                transition: "border-color 0.15s",
-              }}
-              onFocus={(e) => (e.target.style.borderColor = "var(--accent)")}
-              onBlur={(e) => (e.target.style.borderColor = "var(--border)")}
-            />
+          <div style={{ display: "flex", gap: "12px", alignItems: "center", flexWrap: "wrap" }}>
+            <form onSubmit={handleSearch} style={{ display: "flex", gap: "8px" }}>
+              <input
+                type="text"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Search recipes..."
+                style={{
+                  flex: 1,
+                  padding: "10px 16px",
+                  border: "1.5px solid var(--border)",
+                  borderRadius: "var(--radius)",
+                  fontSize: "0.95rem",
+                  background: "var(--bg)",
+                  outline: "none",
+                  transition: "border-color 0.15s",
+                }}
+                onFocus={(e) => (e.target.style.borderColor = "var(--accent)")}
+                onBlur={(e) => (e.target.style.borderColor = "var(--border)")}
+              />
+              <button
+                type="submit"
+                style={{
+                  background: "var(--accent)",
+                  color: "white",
+                  border: "none",
+                  padding: "10px 20px",
+                  borderRadius: "var(--radius)",
+                  fontWeight: 500,
+                  fontSize: "0.95rem",
+                  cursor: "pointer",
+                }}
+              >
+                Search
+              </button>
+            </form>
             <button
-              type="submit"
+              onClick={async () => {
+                const res = await fetch("/api/recipes?random=true");
+                const { id } = await res.json();
+                window.location.href = `/recipes/${id}`;
+              }}
               style={{
-                background: "var(--accent)",
-                color: "white",
-                border: "none",
                 padding: "10px 20px",
+                border: "1.5px solid var(--accent)",
                 borderRadius: "var(--radius)",
+                background: "transparent",
+                color: "var(--accent)",
                 fontWeight: 500,
                 fontSize: "0.95rem",
+                cursor: "pointer",
+                transition: "all 0.15s",
+                whiteSpace: "nowrap",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = "var(--accent)";
+                e.currentTarget.style.color = "white";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = "transparent";
+                e.currentTarget.style.color = "var(--accent)";
               }}
             >
-              Search
+              🎲 Random Recipe
             </button>
-          </form>
-          <button
-            onClick={async () => {
-              const res = await fetch("/api/recipes?random=true");
-              const { id } = await res.json();
-              window.location.href = `/recipes/${id}`;
-            }}
-            style={{
-              padding: "10px 20px",
-              border: "1.5px solid var(--accent)",
-              borderRadius: "var(--radius)",
-              background: "transparent",
-              color: "var(--accent)",
-              fontWeight: 500,
-              fontSize: "0.95rem",
-              cursor: "pointer",
-              transition: "all 0.15s",
-              whiteSpace: "nowrap",
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.background = "var(--accent)";
-              e.currentTarget.style.color = "white";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.background = "transparent";
-              e.currentTarget.style.color = "var(--accent)";
-            }}
-          >
-            🎲 Random Recipe
-          </button>
+          </div>
         </div>
       </section>
 
@@ -194,114 +201,116 @@ export default function HomePage() {
       </section>
 
       {/* Favorites */}
-      <section
-        style={{
-          padding: "0 0 64px",
-          borderTop: "1px solid var(--border)",
-          paddingTop: "48px",
-        }}
-      >
-        <div className="container">
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              marginBottom: "20px",
-            }}
-          >
-            <h2
-              style={{
-                fontSize: "0.8rem",
-                fontWeight: 500,
-                color: "var(--text-muted)",
-                letterSpacing: "0.05em",
-                textTransform: "uppercase",
-              }}
-            >
-              ⭐ Favorites
-            </h2>
-            <a
-              href="/recipes?favorites=true"
-              style={{
-                fontSize: "0.85rem",
-                color: "var(--accent)",
-                fontWeight: 500,
-              }}
-            >
-              View all →
-            </a>
-          </div>
-
-          {loading ? (
-            <p style={{ color: "var(--text-muted)", fontSize: "0.9rem" }}>
-              Loading...
-            </p>
-          ) : (
+      {favorites.length > 0 && (
+        <section
+          style={{
+            padding: "48px 0 64px",
+            borderTop: "1px solid var(--border)",
+          }}
+        >
+          <div className="container">
             <div
               style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))",
-                gap: "12px",
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                marginBottom: "20px",
               }}
             >
-              {favorites.slice(0, 8).map((recipe) => (
-                <a
-                  key={recipe.id}
-                  href={`/recipes/${recipe.id}`}
-                  style={{
-                    display: "block",
-                    padding: "16px",
-                    background: "var(--surface)",
-                    border: "1px solid var(--border)",
-                    borderRadius: "var(--radius)",
-                    transition: "all 0.15s",
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.boxShadow = "var(--shadow-md)";
-                    e.currentTarget.style.borderColor = "var(--accent)";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.boxShadow = "none";
-                    e.currentTarget.style.borderColor = "var(--border)";
-                  }}
-                >
-                  <div
+              <h2
+                style={{
+                  fontSize: "0.8rem",
+                  fontWeight: 500,
+                  color: "var(--text-muted)",
+                  letterSpacing: "0.05em",
+                  textTransform: "uppercase",
+                }}
+              >
+                ⭐ Favorites
+              </h2>
+              <a
+                href="/recipes?favorites=true"
+                style={{
+                  fontSize: "0.85rem",
+                  color: "var(--accent)",
+                  fontWeight: 500,
+                }}
+              >
+                View all →
+              </a>
+            </div>
+
+            {loading ? (
+              <p style={{ color: "var(--text-muted)", fontSize: "0.9rem" }}>
+                Loading...
+              </p>
+            ) : (
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))",
+                  gap: "12px",
+                }}
+              >
+                {favorites.slice(0, 8).map((recipe) => (
+                  <a
+                    key={recipe.id}
+                    href={`/recipes/${recipe.id}`}
                     style={{
-                      fontFamily: "Lora, serif",
-                      fontSize: "0.95rem",
-                      fontWeight: 500,
-                      marginBottom: "8px",
-                      lineHeight: 1.3,
+                      display: "block",
+                      padding: "16px",
+                      background: "var(--surface)",
+                      border: "1px solid var(--border)",
+                      borderRadius: "var(--radius)",
+                      transition: "all 0.15s",
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.boxShadow = "var(--shadow-md)";
+                      e.currentTarget.style.borderColor = "var(--accent)";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.boxShadow = "none";
+                      e.currentTarget.style.borderColor = "var(--border)";
                     }}
                   >
-                    {recipe.name}
-                  </div>
-                  <div
-                    style={{ display: "flex", flexWrap: "wrap", gap: "4px" }}
-                  >
-                    {recipe.tags.slice(0, 3).map((tag) => (
-                      <span
-                        key={tag}
-                        style={{
-                          fontSize: "0.7rem",
-                          background: "var(--tag-bg)",
-                          color: "var(--tag-text)",
-                          padding: "2px 7px",
-                          borderRadius: "999px",
-                          textTransform: "capitalize",
-                        }}
-                      >
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-                </a>
-              ))}
-            </div>
-          )}
-        </div>
-      </section>
+                    <div
+                      className="recipe-title"
+                      style={{
+                        fontFamily: "Lora, serif",
+                        fontSize: "0.95rem",
+                        fontWeight: 500,
+                        marginBottom: "8px",
+                        lineHeight: 1.3,
+                      }}
+                    >
+                      {recipe.name}
+                    </div>
+                    <div
+                      style={{ display: "flex", flexWrap: "wrap", gap: "4px" }}
+                    >
+                      {(recipe.tags || []).slice(0, 3).map((tag) => (
+                        <span
+                          key={tag}
+                          style={{
+                            fontSize: "0.7rem",
+                            background: "var(--tag-bg)",
+                            color: "var(--tag-text)",
+                            padding: "2px 7px",
+                            borderRadius: "999px",
+                            textTransform: "capitalize",
+                          }}
+                        >
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  </a>
+                ))}
+              </div>
+            )}
+          </div>
+        </section>
+      )}
     </main>
   );
 }

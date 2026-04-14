@@ -7,9 +7,14 @@ const isProtectedRoute = createRouteMatcher([
   '/admin(.*)',
 ])
 
-export default clerkMiddleware(async (auth, req) => {
+const isAdminRoute = createRouteMatcher(['/admin(.*)'])
+
+export const proxy = clerkMiddleware(async (auth, req) => {
   if (isProtectedRoute(req)) {
-    await auth.protect()
+    const { userId } = await auth.protect()
+    if (isAdminRoute(req) && userId !== process.env.ADMIN_USER_ID) {
+      return Response.redirect(new URL('/', req.url))
+    }
   }
 })
 
