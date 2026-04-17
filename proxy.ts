@@ -12,6 +12,8 @@ const isAdminRoute = createRouteMatcher(['/admin(.*)'])
 export const proxy = clerkMiddleware(async (auth, req) => {
   if (isProtectedRoute(req)) {
     const { userId } = await auth.protect()
+    console.log('admin check - userID', userId)
+    console.log('admin check - ADMIN_USER_ID:', process.env.ADMIN_USER_ID)
     if (isAdminRoute(req) && userId !== process.env.ADMIN_USER_ID) {
       return Response.redirect(new URL('/', req.url))
     }

@@ -87,7 +87,6 @@ function scaleIngredient(ingredient: string, multiplier: number): string {
   const matches: Array<{ index: number; length: number; value: number }> = []
   let match
   while ((match = pattern.exec(ingredient)) !== null) {
-    const full = match[0]
     let value = 0
     if (match[1]) {
       const whole = parseInt(match[1].trim())
@@ -99,7 +98,7 @@ function scaleIngredient(ingredient: string, multiplier: number): string {
       if (v === null) continue
       value = v
     }
-    matches.push({ index: match.index, length: full.length, value })
+    matches.push({ index: match.index, length: match[0].length, value })
   }
   if (matches.length === 0) return ingredient
   const first = matches[0]
@@ -119,8 +118,7 @@ function scaleIngredient(ingredient: string, multiplier: number): string {
   let result = ingredient.slice(0, first.index)
   result += formatNumber(newAmount)
   if (unitMatch && unitLength > 0) {
-    const afterUnit = afterNumber.slice(unitLength)
-    result += ' ' + newUnit + afterUnit
+    result += ' ' + newUnit + afterNumber.slice(unitLength)
   } else {
     result += ingredient.slice(first.index + first.length)
   }
@@ -140,17 +138,11 @@ const SCALE_OPTIONS = [
 export default function RecipePage() {
   const params = useParams()
   const router = useRouter()
-  const { user } = useUser()
+  const { user, isLoaded } = useUser()
   const [recipe, setRecipe] = useState<Recipe | null>(null)
   const [scale, setScale] = useState(1)
   const [isFavorited, setIsFavorited] = useState(false)
 
-  const isAdmin = user?.id === process.env.NEXT_PUBLIC_ADMIN_USER_ID
-  const isOwner = !!recipe && !!user && recipe.userId === user.id
-  const canEdit = isAdmin || isOwner
-  console.log('ADMIN_USER_ID:', process.env.NEXT_PUBLIC_ADMIN_USER_ID)
-  console.log('user.id:', user?.id)
-  console.log('isAdmin:', isAdmin)
   useEffect(() => {
     fetch(`/api/recipes/${params.id}`)
       .then(r => r.json())
@@ -171,11 +163,15 @@ export default function RecipePage() {
       })
   }, [recipe, user])
 
-  if (!recipe || !recipe.ingredientSections || !recipe.instructions) return (
+  // Wait for both recipe and Clerk user to load
+  if (!recipe || !recipe.ingredientSections || !recipe.instructions || !isLoaded) return (
     <div style={{ padding: '64px 24px', color: 'var(--text-muted)' }}>Loading...</div>
   )
 
   const sections = (recipe.ingredientSections || []) as IngredientSection[]
+  const isAdmin = user?.id === process.env.NEXT_PUBLIC_ADMIN_USER_ID
+  const isOwner = !!user && recipe.userId === user.id
+  const canEdit = isAdmin || isOwner
 
   const toggleFavorite = async () => {
     if (isFavorited) {
@@ -303,7 +299,6 @@ export default function RecipePage() {
               <h2 style={{ fontSize: '0.75rem', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--text-muted)' }}>
                 Ingredients
               </h2>
-              {/* Scale toggle */}
               <div style={{ display: 'flex', gap: '2px', background: 'var(--tag-bg)', borderRadius: 'var(--radius)', padding: '2px' }}>
                 {SCALE_OPTIONS.map(opt => (
                   <button
