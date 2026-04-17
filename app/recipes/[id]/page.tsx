@@ -148,7 +148,9 @@ export default function RecipePage() {
   const isAdmin = user?.id === process.env.NEXT_PUBLIC_ADMIN_USER_ID
   const isOwner = !!recipe && !!user && recipe.userId === user.id
   const canEdit = isAdmin || isOwner
-
+  console.log('ADMIN_USER_ID:', process.env.NEXT_PUBLIC_ADMIN_USER_ID)
+  console.log('user.id:', user?.id)
+  console.log('isAdmin:', isAdmin)
   useEffect(() => {
     fetch(`/api/recipes/${params.id}`)
       .then(r => r.json())
