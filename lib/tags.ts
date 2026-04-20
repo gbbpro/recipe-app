@@ -24,6 +24,7 @@ export const ALL_TAGS = [
   'gluten-free',
   'quick',
   'slow-cooker',
+  'pork',
 ]
 
 export const TAG_ICONS: Record<string, string> = {
@@ -52,4 +53,5 @@ export const TAG_ICONS: Record<string, string> = {
   'gluten-free': '🌾',
   quick: '⚡',
   'slow-cooker': '🍲',
+  pork: '🐖'
 }
