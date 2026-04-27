@@ -8,10 +8,10 @@ export const metadata: Metadata = {
   title: '810 Recipe App',
   description: 'A personal recipe collection',
   icons: {
-    icon: '~/Dev/recipe-app/public/favicon.png',
-    apple: '~/Dev/recipe-app/public/apple-touch-icon.png'
+    icon: '/favicon.png',
+    apple: '/apple-touch-icon.png'
   }
-  mainfest: '~/Dev/recipe-app/public/site.webmanifest'
+  manifest: '/site.webmanifest'
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
