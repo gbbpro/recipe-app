@@ -1,88 +1,114 @@
-import { ClerkProvider } from "@clerk/nextjs"
-import type { Metadata } from 'next'
-import './globals.css'
-import DarkModeToggle from "@/components/DarkModeToggle"
-import UserNav from "@/components/UserNav"
+import { ClerkProvider } from "@clerk/nextjs";
+import type { Metadata } from "next";
+import "./globals.css";
+import DarkModeToggle from "@/components/DarkModeToggle";
+import UserNav from "@/components/UserNav";
 
 export const metadata: Metadata = {
-  title: '810 Recipe App',
-  description: 'A personal recipe collection',
+  title: "810 Recipe App",
+  description: "A personal recipe collection",
   icons: {
-    icon: '/favicon.png',
-    apple: '/apple-touch-icon.png'
+    icon: "/favicon.ico",
+    apple: "/apple-touch-icon.png",
   },
-  manifest: '/site.webmanifest'
-}
+  manifest: "/site.webmanifest",
+};
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <ClerkProvider>
-    <html lang="en" suppressHydrationWarning>
-      <head>
-            <script dangerouslySetInnerHTML={{ __html: `
+      <html lang="en" suppressHydrationWarning>
+        <head>
+          <script
+            dangerouslySetInnerHTML={{
+              __html: `
               const theme = localStorage.getItem('theme')
               if (theme) document.documentElement.setAttribute('data-theme', theme)
-            `}} />
-      </head>
-      <body>
-        <nav style={{
-          borderBottom: '1px solid var(--border)',
-          background: 'var(--surface)',
-          position: 'sticky',
-          top: 0,
-          zIndex: 100,
-        }}>
-          <div className="container" style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            height: '60px',
-          }}>
-            <a href="/" style={{
-              fontFamily: 'Lora, serif',
-              fontSize: '1.25rem',
-              fontWeight: 600,
-              color: 'var(--accent)',
-              letterSpacing: '-0.01em',
-            }}>
-              Recipes
-            </a>
-            <div className="nav-links" style={{display: 'flex', gap: '24px', alignItems: 'center' }}>
-              <a href="/recipes" style={{
-                fontSize: '0.875rem',
-                color: 'var(--text-muted)',
-                fontWeight: 500,
-                transition: 'color 0.15s',
+            `,
+            }}
+          />
+        </head>
+        <body>
+          <nav
+            style={{
+              borderBottom: "1px solid var(--border)",
+              background: "var(--surface)",
+              position: "sticky",
+              top: 0,
+              zIndex: 100,
+            }}
+          >
+            <div
+              className="container"
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                height: "60px",
               }}
+            >
+              <a
+                href="/"
+                style={{
+                  fontFamily: "Lora, serif",
+                  fontSize: "1.25rem",
+                  fontWeight: 600,
+                  color: "var(--accent)",
+                  letterSpacing: "-0.01em",
+                }}
               >
-                Browse
+                Recipes
               </a>
-              <a href="/recipes/new" style={{
-                fontSize: '0.875rem',
-                background: 'var(--accent)',
-                color: 'white',
-                padding: '6px 14px',
-                borderRadius: 'var(--radius)',
-                fontWeight: 500,
-              }}>
-                + Add Recipe
-              </a>
-              <a href="/planner" style={{
-                fontSize: '0.875rem',
-                color: 'var(--text-muted)',
-                fontWeight: 500,
-              }}>
-                Planner
-              </a>
-            <DarkModeToggle />
-              <UserNav />
-
+              <div
+                className="nav-links"
+                style={{ display: "flex", gap: "24px", alignItems: "center" }}
+              >
+                <a
+                  href="/recipes"
+                  style={{
+                    fontSize: "0.875rem",
+                    color: "var(--text-muted)",
+                    fontWeight: 500,
+                    transition: "color 0.15s",
+                  }}
+                >
+                  Browse
+                </a>
+                <a
+                  href="/recipes/new"
+                  style={{
+                    fontSize: "0.875rem",
+                    background: "var(--accent)",
+                    color: "white",
+                    padding: "6px 14px",
+                    borderRadius: "var(--radius)",
+                    fontWeight: 500,
+                  }}
+                >
+                  + Add Recipe
+                </a>
+                <a
+                  href="/planner"
+                  style={{
+                    fontSize: "0.875rem",
+                    color: "var(--text-muted)",
+                    fontWeight: 500,
+                  }}
+                >
+                  Planner
+                </a>
+                <DarkModeToggle />
+                <UserNav />
+              </div>
             </div>
-          </div>
-        </nav>
-        {children}
-      </body>
-    </html>
+          </nav>
+          {children}
+        </body>
+      </html>
     </ClerkProvider>
-  )
+  );
 }
