@@ -25,13 +25,18 @@ export default function RootLayout({
         <head>
           <script
             dangerouslySetInnerHTML={{
-              __html: `
-              const theme = localStorage.getItem('theme')
-              if (theme) document.documentElement.setAttribute('data-theme', theme)
-            `,
+              __html:
+                "const theme = localStorage.getItem('theme'); if (theme) document.documentElement.setAttribute('data-theme', theme);",
+            }}
+          />
+          <script
+            dangerouslySetInnerHTML={{
+              __html:
+                "if ('serviceWorker' in navigator) { window.addEventListener('load', function() { navigator.serviceWorker.register('/sw.js'); }); }",
             }}
           />
         </head>
+
         <body>
           <nav
             style={{
