@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Suspense } from "react";
 import { ALL_TAGS } from "@/lib/tags";
+import { RecipeGridSkeleton } from "@/components/Skeleton";
 
 type Recipe = {
   id: number;
@@ -309,9 +310,7 @@ function RecipeBrowser() {
         {/* Recipe grid */}
         <div className="recipe-grid" style={{ flex: 1 }}>
           {loading ? (
-            <div style={{ color: "var(--text-muted)", padding: "32px 0" }}>
-              Loading...
-            </div>
+            <RecipeGridSkeleton count={12} />
           ) : recipes.length === 0 ? (
             <div style={{ color: "var(--text-muted)", padding: "32px 0" }}>
               No recipes found.
@@ -380,9 +379,9 @@ function RecipeBrowser() {
                     <div
                       style={{ display: "flex", flexWrap: "wrap", gap: "4px" }}
                     >
-                      {recipe.tags.slice(0, 3).map((tag) => (
+                      {recipe.tags.slice(0, 3).map((tag, i) => (
                         <span
-                          key={tag}
+                          key={`${tag}-${i}`}
                           style={{
                             fontSize: "0.7rem",
                             background: "var(--tag-bg)",

@@ -4,7 +4,6 @@ import { auth } from "@clerk/nextjs/server";
 
 export async function GET(req: NextRequest) {
   const { userId } = await auth();
-  console.log("UserId in API: ", userId);
   const { searchParams } = new URL(req.url);
   const search = searchParams.get("search") || "";
   const tag = searchParams.get("tag") || "";

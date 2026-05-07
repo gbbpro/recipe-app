@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ALL_TAGS, TAG_ICONS } from "@/lib/tags";
+import { HomePageSkeleton } from "@/components/Skeleton";
 
 type Recipe = {
   id: number;
@@ -72,8 +73,18 @@ export default function HomePage() {
           >
             Browse {recipeCount ?? "..."} recipes by category or search by name.
           </p>
-          <div style={{ display: "flex", gap: "12px", alignItems: "center", flexWrap: "wrap" }}>
-            <form onSubmit={handleSearch} style={{ display: "flex", gap: "8px" }}>
+          <div
+            style={{
+              display: "flex",
+              gap: "12px",
+              alignItems: "center",
+              flexWrap: "wrap",
+            }}
+          >
+            <form
+              onSubmit={handleSearch}
+              style={{ display: "flex", gap: "8px" }}
+            >
               <input
                 type="text"
                 value={search}
@@ -241,9 +252,7 @@ export default function HomePage() {
             </div>
 
             {loading ? (
-              <p style={{ color: "var(--text-muted)", fontSize: "0.9rem" }}>
-                Loading...
-              </p>
+              <HomePageSkeleton />
             ) : (
               <div
                 style={{
