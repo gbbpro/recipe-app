@@ -620,6 +620,7 @@ export default function PlannerPage() {
                 </h3>
                 <div style={{ display: "flex", gap: "8px" }}>
                   <button
+                    className="planner-nav-btn"
                     onClick={() => window.print()}
                     style={{
                       fontSize: "0.8rem",
